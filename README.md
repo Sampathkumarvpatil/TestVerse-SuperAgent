@@ -32,7 +32,7 @@ The GUI window will appear. Enter your test instructions in the prompt area and 
 If you prefer a terminal interface, run:
 
 ```powershell
-python -c "import cli; cli.main()"
+python -c "import asyncio, cli; asyncio.run(cli.main())"
 ```
 
 Follow on-screen prompts to input your steps one by one.
