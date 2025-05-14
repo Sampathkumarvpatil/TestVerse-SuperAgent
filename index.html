@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Testverse SuperAgent | Transform natural language into executable automated tests.</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@fontsource-variable/inter@3.3.1/variable.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css" rel="stylesheet">
+  <style>
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter Variable',Inter,sans-serif; }
+    .bg-gradient { background: linear-gradient(135deg,#25124a 10%,#122149 100%); }
+    .text-gradient {
+      background: linear-gradient(90deg, #9f7aea 30%, #628fff 60%, #31e1f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .gradient-button {
+      background: linear-gradient(90deg, #7856ff 40%, #31e1f7 100%);
+      color: white;
+    }
+    .gradient-border {
+      border-image: linear-gradient(90deg,#7856ff,#31e1f7) 1;
+    }
+    section:not(:first-child) { padding-top: 3rem; }
+    .section-divider {
+      width: 60px; height: 6px; margin: 0 auto 2.5rem auto;
+      border-radius: 8px;
+      background: linear-gradient(90deg,#628fff,#31e1f7);
+      opacity:.36;
+    }
+    .parallax-bg {
+      position: absolute;
+      z-index: 0;
+      pointer-events: none;
+      width: 100vw;
+      height: 240px;
+      left: 0;
+      top: 0;
+      background: linear-gradient(135deg,rgba(31,191,255,0.09) 25%,rgba(138,36,227,0.11) 70%);
+      filter: blur(3px);
+      opacity: .38;
+    }
+    .underline-anim {
+      display: inline-block;
+      position: relative;
+    }
+    .underline-anim:after {
+      content: '';
+      display: block;
+      width: 80%;
+      margin: 0 auto;
+      height: 4px;
+      background: linear-gradient(90deg,#628fff,#31e1f7);
+      border-radius: 2px;
+      position: absolute;
+      left: 10%; bottom: -8px;
+      opacity: .72;
+      animation: underlineMove 2.5s ease-in-out infinite alternate;
+    }
+    @keyframes underlineMove {
+      0% { left: 10%; width: 80%; }
+      100% { left: 0%; width: 100%; }
+    }
+    @media (max-width: 768px) {
+      .flex-row { flex-direction: column; }
+      .text-5xl { font-size: 2.1rem; }
+      .text-4xl { font-size: 1.6rem; }
+      .mx-10 { margin-left: 1.5rem; margin-right: 1.5rem; }
+    }
+
+    /* --- Unified Animation Styles (matches Getting Started steps everywhere) --- */
+    .feature-card-anim,
+    .step-anim,
+    .faq-item,
+    .gradient-button,
+    .hover-zoom,
+    nav a,
+    .faq-answer {
+      transition:
+        transform 0.4s cubic-bezier(.42,0,.14,1.3),
+        box-shadow 0.38s cubic-bezier(.4,0,.2,1),
+        opacity 0.4s cubic-bezier(.28,.51,.46,.98),
+        background 0.3s;
+      will-change: transform, box-shadow, opacity;
+    }
+    .feature-card-anim:hover,
+    .step-anim:hover,
+    .gradient-button:hover,
+    .hover-zoom:hover,
+    nav a:hover {
+      transform: scale(1.045) !important;
+      z-index: 10;
+      box-shadow: 0px 8px 26px 0 rgba(50,145,255,0.18),0px 4px 18px 0 rgba(122,76,255,0.10);
+    }
+    .feature-card-anim:active,
+    .step-anim:active,
+    .gradient-button:active,
+    .hover-zoom:active,
+    nav a:active {
+      transform: scale(0.98) !important;
+    }
+    .feature-card-anim:focus-within,
+    .step-anim:focus-within,
+    .gradient-button:focus,
+    .hover-zoom:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px #62b5ff80, 0px 1.5px 18px #7856ff2a;
+      transform: scale(1.03) !important;
+    }
+    /* FAQ accoridon unified zoom animation and arrow indicator */
+    .faq-answer {
+      display: none;
+      transform: scale(0.98);
+      opacity: 0.1;
+      transition: transform 0.38s cubic-bezier(.42,0,.14,1.3), opacity 0.4s cubic-bezier(.32,0,0.33,1.5);
+      will-change: transform, opacity;
+    }
+    .faq-item.open .faq-answer {
+      display: block;
+      transform: scale(1);
+      opacity: 1;
+      animation: faqZoomIn 0.35s cubic-bezier(0.32,0,0.33,1.5);
+    }
+    @keyframes faqZoomIn {
+      0% { opacity: 0; transform: scale(0.95);}
+      100% { opacity: 1; transform: scale(1);}
+    }
+    .faq-item .fa-chevron-down { transition: transform 0.38s cubic-bezier(.42,0,.14,1.3); }
+    .faq-item.open .fa-chevron-down { transform: rotate(180deg) scale(1.13); color: #22e7ff; }
+
+    .glow {
+      box-shadow: 0 4px 30px 0 rgba(75, 209, 255, .25), 0 1.5px 14px 0 #7856ff28;
+    }
+    .animate-fadeInDown { animation: fadeInDown 1s; }
+    .animate-fadeInUp { animation: fadeInUp 1s; }
+    @keyframes fadeInDown {
+      from { opacity:0; transform:translateY(-48px);}
+      to   { opacity:1; transform:translateY(0);}
+    }
+    @keyframes fadeInUp {
+      from { opacity:0; transform:translateY(32px);}
+      to   { opacity:1; transform:translateY(0);}
+    }
+  </style>
+  <script>
+  document.addEventListener("DOMContentLoaded", function(){
+    const parallax = document.getElementById("parallaxBg");
+    if (parallax) {
+      window.addEventListener('scroll', function () {
+        parallax.style.transform = "translateY(" + window.scrollY * .16 + "px)";
+      });
+    }
+    // Apply scale (zoom) on mousedown/up/leave/focus to all marked
+    const zoomables = document.querySelectorAll('.feature-card-anim,.step-anim,.gradient-button,.hover-zoom,nav a');
+    zoomables.forEach((el)=>{
+      el.addEventListener('mousedown', ()=>el.style.transform='scale(0.98)');
+      el.addEventListener('mouseup', ()=>el.style.transform='scale(1.04)');
+      el.addEventListener('mouseleave', ()=>el.style.transform='');
+      el.addEventListener('focus', ()=>el.style.transform='scale(1.03)');
+      el.addEventListener('blur', ()=>el.style.transform='');
+    });
+  });
+  </script>
+</head>
+<body class="bg-gradient text-gray-100 leading-relaxed">
+
+<div id="parallaxBg" class="parallax-bg"></div> 
+
+<nav class="w-full py-4 px-6 shadow-xl bg-opacity-80 bg-gray-900 sticky top-0 z-20 flex items-center border-b border-gray-800">
+  <div class="flex items-center space-x-3">
+    <i class="fa-solid fa-robot text-gradient text-3xl"></i>
+    <span class="font-bold text-xl tracking-tight text-gradient">AI Testverse SuperAgent</span>
+  </div>
+  <div class="ml-auto flex space-x-7 text-sm font-medium">
+    <a href="#home" class="hover:text-cyan-400">Home</a>
+    <a href="#features" class="hover:text-cyan-400">Features</a>
+    <a href="#getting-started" class="hover:text-cyan-400">Getting Started</a>
+    <a href="#faq" class="hover:text-cyan-400">FAQ & Support</a>
+  </div>
+</nav>
+
+<section id="home" class="min-h-screen flex flex-col justify-center items-center text-center pt-10 pb-8 relative">
+  <h1 class="text-5xl md:text-6xl font-extrabold mb-2 text-gradient underline-anim">Transform English into Automated Tests</h1>
+  <div class="section-divider"></div>
+  <p class="mt-4 text-lg md:text-2xl max-w-2xl mx-auto text-slate-300">
+    <span class="font-bold text-white">AI Testverse SuperAgent</span> lets you instantly automate browser-based QA —<br>
+    <span class="text-cyan-300">just type your test steps in plain English</span>, and SuperAgent does the rest.<br>
+    No coding. No scripts. Blazing fast setup.
+  </p>
+  <div class="flex flex-col md:flex-row items-center space-y-3 md:space-y-0 md:space-x-6 mt-7">
+    <a href="#getting-started" class="gradient-button px-7 py-3 rounded-full shadow-lg font-semibold text-lg transition">Get Started</a>
+    <a href="#features" class="bg-transparent border border-cyan-400 px-6 py-3 rounded-full font-semibold text-cyan-400 hover:bg-cyan-900 transition">See Features</a>
+    <a href="https://aitestversesuperagent.s3.us-west-2.amazonaws.com/AITestversesuperagent.zip" download class="border border-green-500 px-6 py-3 rounded-full font-semibold text-green-300 hover:bg-green-900 flex items-center transition">
+      <i class="fa-solid fa-file-archive mr-2"></i>
+      Download ZIP
+    </a>
+  </div>
+  <div class="flex flex-wrap gap-2 justify-center mt-8">
+    <div class="bg-gray-800 bg-opacity-80 px-4 py-2 rounded-full text-xs text-slate-400 flex items-center"><i class="fa-solid fa-lightbulb mr-2 text-cyan-300"></i> No code, just plain English</div>
+    <div class="bg-gray-800 bg-opacity-80 px-4 py-2 rounded-full text-xs text-slate-400 flex items-center"><i class="fa-solid fa-download mr-2 text-indigo-300"></i> Unzip & Run — 2 mins setup</div>
+    <div class="bg-gray-800 bg-opacity-80 px-4 py-2 rounded-full text-xs text-slate-400 flex items-center"><i class="fa-solid fa-robot mr-2 text-gradient"></i> AI Powered. Truly Zero Code.</div>
+  </div>
+  <div class="mt-14 mb-2 w-full flex justify-center">
+    <div class="rounded-2xl overflow-hidden border-4 border-gradient glow w-full max-w-3xl relative animate-fadeInDown">
+      <video controls playsinline webkit-playsinline class="w-full h-64 md:h-96 object-cover bg-black">
+        <source src="https://aitestversesuperagent.s3.us-west-2.amazonaws.com/superagentvideo.mp4" type="video/mp4">
+        Video not supported
+      </video>
+      <div class="absolute left-3 bottom-3 bg-gradient-to-r from-cyan-900/80 to-indigo-900/90 rounded px-4 py-1 text-xs text-cyan-100 font-mono shadow-lg" style="backdrop-filter:blur(4px);">
+        <i class="fa-solid fa-play-circle mr-1"></i>
+        Watch Testverse in Action (1:20 min)
+      </div>
+    </div>
+  </div>
+  <p class="text-xs text-gray-400 mt-1">Demo: Instantly turn natural language into robust, automated browser tests.</p>
+</section>
+
+<section class="max-w-5xl mx-auto py-8 px-4 md:px-10">
+  <div class="grid md:grid-cols-3 gap-8">
+    <div class="bg-gray-800 feature-card-anim rounded-xl p-7 shadow-lg flex flex-col items-center text-center">
+      <div class="text-3xl mb-2 text-purple-300 animate-bounce"><i class="fa-solid fa-gears"></i></div>
+      <h3 class="font-bold text-xl mb-2 text-white">True NLP Automation</h3>
+      <p class="text-slate-300">Describe your test in English. SuperAgent designs and runs your automation behind the scenes — no scripts, no learning curve.</p>
+    </div>
+    <div class="bg-gray-800 feature-card-anim rounded-xl p-7 shadow-lg flex flex-col items-center text-center">
+      <div class="text-3xl mb-2 text-cyan-300 animate-spin" style="animation-duration:6s;"><i class="fa-solid fa-bolt"></i></div>
+      <h3 class="font-bold text-xl mb-2 text-white">Rapid & Easy Setup</h3>
+      <p class="text-slate-300">Simply unzip, enter your API key, and run one command. Start testing within minutes — on any machine with Python 3.11+.</p>
+    </div>
+    <div class="bg-gray-800 feature-card-anim rounded-xl p-7 shadow-lg flex flex-col items-center text-center">
+      <div class="text-3xl mb-2 text-teal-300 animate-pulse"><i class="fa-solid fa-shield-halved"></i></div>
+      <h3 class="font-bold text-xl mb-2 text-white">Powerful & Secure</h3>
+      <p class="text-slate-300">All code is local; no vendor lock-in. Your tests stay private. Modern desktop app for both GUI and command-line use.</p>
+    </div>
+  </div>
+</section>
+
+<section id="features" class="relative bg-gray-900 bg-opacity-90 py-16 px-6 overflow-visible">
+  <div class="max-w-6xl mx-auto">
+    <h2 class="text-4xl md:text-5xl font-extrabold mb-12 text-gradient text-center underline-anim">Features</h2>
+    <div class="section-divider"></div>
+    <div class="flex flex-wrap items-stretch gap-12">
+      <div class="flex-1 min-w-[315px] flex flex-col space-y-7">
+        <div class="bg-gradient-to-r from-indigo-800 to-cyan-800 rounded-2xl feature-card-anim shadow-xl p-7">
+          <div class="flex items-center">
+            <span class="text-3xl text-indigo-300 mr-3"><i class="fa-solid fa-language"></i></span>
+            <span class="font-bold text-lg text-white">NLP-Powered Test Creation</span>
+          </div>
+          <p class="text-slate-200 mt-2">Type your test case in natural English. No code, no syntax — just plain language.</p>
+        </div>
+        <div class="bg-gradient-to-r from-cyan-900 to-purple-800 rounded-2xl feature-card-anim shadow-xl p-7">
+          <div class="flex items-center">
+            <span class="text-3xl text-teal-300 mr-3"><i class="fa-solid fa-window-restore"></i></span>
+            <span class="font-bold text-lg text-white">Browser Automation</span>
+          </div>
+          <p class="text-slate-200 mt-2">Automate browser actions for regression, smoke, or end-to-end workflows.</p>
+        </div>
+        <div class="bg-gradient-to-r from-purple-900 to-indigo-600 rounded-2xl feature-card-anim shadow-xl p-7">
+          <div class="flex items-center">
+            <span class="text-3xl text-pink-300 mr-3"><i class="fa-solid fa-key"></i></span>
+            <span class="font-bold text-lg text-white">Easy API Key Management</span>
+          </div>
+          <p class="text-slate-200 mt-2">
+            Paste your key in-app. No complicated auth — seamless, secure, and privacy-focused.
+            <br>
+            <img src="https://aitestversesuperagent.s3.us-west-2.amazonaws.com/superagentapikey.png" class="rounded-lg mt-2 shadow-md w-full max-w-xs mx-auto border border-pink-400" alt="API Key Steps">
+            <span class="block text-xs mt-1 text-gray-400">Paste your API key in <span class="font-mono">Settings</span></span>
+          </p>
+        </div>
+      </div>
+      <div class="flex-1 min-w-[300px] overflow-visible">
+        <div class="w-full bg-gray-900 bg-opacity-80 rounded-2xl shadow-2xl p-8 mb-6 border border-cyan-500 glow">
+        <h3 class="text-cyan-300 font-bold mb-3 text-lg flex items-center"><i class="fa-regular fa-comments mr-2"></i> Works With Your English</h3>
+        <ul class="list-disc list-inside text-slate-300 space-y-1 pl-3">
+          <li>Ex: <span class="bg-gray-800 rounded px-2 py-0.5 font-mono text-sm">Go to https://xyz.ai and test login page" .</span></li>
+          <li>SuperAgent automatically generates and executes positive, negative, and edge test cases—including SQL injection, boundary conditions, security scenarios, and business logic automation—instantly for you.</li>
+        </ul>
+        </div>
+        <div class="w-full flex flex-col items-center justify-center mb-4">
+          <div class="rounded-xl shadow-2xl border border-green-400 p-2 bg-black">
+            <img src="https://aitestversesuperagent.s3.us-west-2.amazonaws.com/superagent1.png" alt="Terminal execution" class="rounded-md w-full max-w-xs mx-auto" />
+            <span class="block text-xs text-green-200 mt-1 text-center">Terminal: Instant no-code app launch</span>
+          </div>
+        </div>
+        <div class="bg-gradient-to-r from-cyan-600 to-indigo-600 rounded-2xl shadow-xl p-8 mt-16 text-white text-center">
+          <i class="fa-solid fa-shield-virus text-2xl mb-2"></i>
+          <h3 class="font-bold text-lg mb-2">Local & Secure</h3>
+          <p>Everything runs on your machine. No browser plug-ins, no cloud syncs, and no privacy headaches.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="getting-started" class="py-16 px-4 md:px-12 bg-gradient-to-r from-[#25124a] via-[#18205a] to-[#172332] relative overflow-visible">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="text-4xl font-extrabold mb-8 text-gradient underline-anim text-center">Getting Started</h2>
+    <div class="section-divider"></div>
+    <div class="flex flex-wrap gap-10 items-start justify-center">
+      <div class="flex-1 min-w-[330px]">
+        <ol class="space-y-6 text-lg">
+          <li class="bg-opacity-90 step-anim bg-gray-900 p-4 rounded-xl shadow-lg">
+            <div class="flex items-center mb-2"><span class="text-cyan-400 text-2xl font-bold mr-3">1</span><span class="font-semibold">Download ZIP</span></div>
+            <div>
+              <a href="https://aitestversesuperagent.s3.us-west-2.amazonaws.com/AITestversesuperagent.zip" download class="text-blue-200 underline font-medium">AITestversesuperagent.zip</a>
+            </div>
+          </li>
+          <li class="bg-opacity-90 step-anim bg-gray-900 p-4 rounded-xl shadow-lg">
+            <div class="flex items-center mb-2"><span class="text-cyan-400 text-2xl font-bold mr-3">2</span><span class="font-semibold">Install Python 3.11+</span></div>
+            <div>
+              Download from <a class="underline text-blue-200" href="https://python.org" target="_blank" rel="noopener">python.org</a>, add to your <span class="bg-gray-800 rounded px-2 font-mono">PATH</span>.
+            </div>
+          </li>
+          <li class="bg-opacity-90 step-anim bg-gray-900 p-4 rounded-xl shadow-lg">
+            <div class="flex items-center mb-2"><span class="text-cyan-400 text-2xl font-bold mr-3">3</span><span class="font-semibold">Set Up Virtual Environment</span></div>
+            <span class="font-mono bg-gray-800 rounded px-2 py-1 text-base">python -m venv .venv</span>, then activate:
+            <span class="font-mono bg-gray-800 rounded px-2 py-1 text-base">.venv\Scripts\activate</span>
+          </li>
+          <li class="bg-opacity-90 step-anim bg-gray-900 p-4 rounded-xl shadow-lg">
+            <div class="flex items-center mb-2"><span class="text-cyan-400 text-2xl font-bold mr-3">4</span><span class="font-semibold">Install Dependencies</span></div>
+            <span class="font-mono bg-gray-800 rounded px-2 py-1 text-base">pip install PySide6 playwright</span><br>
+            <span class="font-mono bg-gray-800 rounded px-2 py-1 text-base">python -m playwright install chromium</span>
+          </li>
+          <li class="bg-opacity-90 step-anim bg-gray-900 p-4 rounded-xl shadow-lg">
+            <div class="flex items-center mb-2"><span class="text-cyan-400 text-2xl font-bold mr-3">5</span><span class="font-semibold">Run the App</span></div>
+            <span class="font-mono bg-gray-800 rounded px-2 py-1 text-base">python start.py</span>
+          </li>
+          <li class="bg-opacity-90 step-anim bg-gray-900 p-4 rounded-xl shadow-lg">
+            <div class="flex items-center mb-2"><span class="text-cyan-400 text-2xl font-bold mr-3">6</span><span class="font-semibold">API Key</span></div>
+            <div>
+              Contact Dr. Sanjeev Kuwadekar or Dr. Sampath V. Patil for your key.<br>
+              Paste this key in the app <b>Settings</b> (gear icon).
+              <img src="https://aitestversesuperagent.s3.us-west-2.amazonaws.com/superagentapikey.png" alt="API Key Setting Visual" class="rounded-lg mt-2 shadow-md w-full max-w-xs border border-pink-300" />
+            </div>
+          </li>
+        </ol>
+      </div>
+      <div class="flex-1 min-w-[290px] flex flex-col gap-8 items-center w-full">
+        <div class="relative w-full max-w-xs flex flex-col items-center animate-fadeInDown">
+          <img src="https://aitestversesuperagent.s3.us-west-2.amazonaws.com/superagent1.png" alt="Terminal image" class="rounded-xl shadow-lg w-full border border-green-300" />
+          <span class="mt-2 text-xs text-cyan-100">Terminal: Run <span class="font-mono px-2 rounded bg-gray-800">python start.py</span></span>
+        </div>
+        <div class="relative w-full max-w-xs flex flex-col items-center animate-fadeInDown">
+          <img src="https://aitestversesuperagent.s3.us-west-2.amazonaws.com/superagentapikey.png" alt="API Key Settings" class="rounded-xl shadow-lg w-full border border-pink-300" />
+          <span class="mt-2 text-xs text-cyan-100">Paste API key under Settings</span>
+        </div>
+      </div>
+    </div>
+    <div class="bg-gradient-to-r from-indigo-700 via-cyan-600 to-indigo-900 rounded-xl p-7 mt-10 text-white shadow-xl">
+      <div class="flex items-center mb-2"><i class="fa-solid fa-circle-info text-xl mr-2"></i><span class="font-bold">Tips for a Smooth Experience:</span></div>
+      <ul class="list-disc pl-6 space-y-1 text-base">
+        <li>Note: If a site or dropdown fails, intervene manually. SuperAgent will handle the rest.</li>
+        <li>For best accuracy, run your tests in smaller phases.</li>
+        <li>If anything gets stuck during execution, restart the session.</li>
+        <li>Don't edit/view compiled modules; you don't need to touch <span class="font-mono bg-gray-900 px-2 rounded">.pyd</span> files.</li>
+        <li>The app is local—your data never leaves your computer.</li>
+      </ul>
+    </div>
+    <div class="mt-8 text-center text-gray-400 text-sm">
+      Released under the MIT License. See <span class="underline">LICENSE</span> for details.
+    </div>
+  </div>
+</section>
+
+<section id="faq" class="py-16 px-4 bg-gradient-to-r from-[#25124a] via-[#223057] to-[#122149] bg-opacity-80">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="text-4xl font-extrabold mb-7 text-gradient text-center underline-anim">FAQ & Support</h2>
+    <div class="section-divider"></div>
+    <div class="space-y-6">
+      <div class="faq-item bg-gray-800 bg-opacity-90 rounded-lg p-6 shadow-md feature-card-anim">
+        <button type="button" onclick="toggleFaq(this)" class="w-full flex justify-between items-center text-lg font-semibold focus:outline-none">
+          <span><i class="fa-solid fa-question-circle mr-2 text-cyan-300"></i>Does AI Testverse SuperAgent require coding skills?</span>
+          <i class="fa-solid fa-chevron-down transition"></i>
+        </button>
+        <div class="faq-answer mt-2 text-slate-300 border-l-4 border-cyan-400 pl-5">
+          No! Just type your automation scenario in plain English, and the agent runs your tests — no Selenium or scripts required.
+        </div>
+      </div>
+      <div class="faq-item bg-gray-800 bg-opacity-90 rounded-lg p-6 shadow-md feature-card-anim">
+        <button type="button" onclick="toggleFaq(this)" class="w-full flex justify-between items-center text-lg font-semibold focus:outline-none">
+          <span><i class="fa-solid fa-key mr-2 text-pink-300"></i>How do I get my API Key?</span>
+          <i class="fa-solid fa-chevron-down transition"></i>
+        </button>
+        <div class="faq-answer mt-2 text-slate-300 border-l-4 border-pink-400 pl-5">
+          Contact <span class="text-cyan-400">Dr. Sanjeev Kuwadekar</span> or <span class="text-cyan-400">Dr. Sampath V. Patil</span> and request your key. Paste it in the app settings (gear icon).
+        </div>
+      </div>
+      <div class="faq-item bg-gray-800 bg-opacity-90 rounded-lg p-6 shadow-md feature-card-anim">
+        <button type="button" onclick="toggleFaq(this)" class="w-full flex justify-between items-center text-lg font-semibold focus:outline-none">
+          <span><i class="fa-solid fa-desktop mr-2 text-amber-300"></i>What operating systems are supported?</span>
+          <i class="fa-solid fa-chevron-down transition"></i>
+        </button>
+        <div class="faq-answer mt-2 text-slate-300 border-l-4 border-amber-400 pl-5">
+          Works on Windows, macOS, and most modern Linux distributions — anywhere Python 3.11+ runs.
+        </div>
+      </div>
+      <div class="faq-item bg-gray-800 bg-opacity-90 rounded-lg p-6 shadow-md feature-card-anim">
+        <button type="button" onclick="toggleFaq(this)" class="w-full flex justify-between items-center text-lg font-semibold focus:outline-none">
+          <span><i class="fa-solid fa-lock mr-2 text-green-300"></i>Is it safe? Does it upload my private test data?</span>
+          <i class="fa-solid fa-chevron-down transition"></i>
+        </button>
+        <div class="faq-answer mt-2 text-slate-300 border-l-4 border-green-400 pl-5">
+          Data and tests stay local on your machine. Only minimal required test context is sent to the AI service, not your app data.
+        </div>
+      </div>
+      <div class="faq-item bg-gray-800 bg-opacity-90 rounded-lg p-6 shadow-md feature-card-anim">
+        <button type="button" onclick="toggleFaq(this)" class="w-full flex justify-between items-center text-lg font-semibold focus:outline-none">
+          <span><i class="fa-solid fa-headset mr-2 text-purple-300"></i>Where do I get support if I have issues?</span>
+          <i class="fa-solid fa-chevron-down transition"></i>
+        </button>
+        <div class="faq-answer mt-2 text-slate-300 border-l-4 border-purple-400 pl-5">
+          Email <span class="text-cyan-200">Dr. Sanjeev Kuwadekar</span> or <span class="text-cyan-200">Dr. Sampath V. Patil</span>. <br>Or open an issue on the GitHub repo.
+        </div>
+      </div>
+      <div class="faq-item bg-gray-800 bg-opacity-90 rounded-lg p-6 shadow-md feature-card-anim">
+        <button type="button" onclick="toggleFaq(this)" class="w-full flex justify-between items-center text-lg font-semibold focus:outline-none">
+          <span><i class="fa-solid fa-exclamation-triangle mr-2 text-orange-200"></i>Some elements (dropdowns, tabs) don't always work as expected. What do I do?</span>
+          <i class="fa-solid fa-chevron-down transition"></i>
+        </button>
+        <div class="faq-answer mt-2 text-slate-300 border-l-4 border-orange-400 pl-5">
+          If a dropdown fails, intervene manually (e.g., select the option directly); SuperAgent will resume. For best results, test in smaller steps and restart if needed.
+        </div>
+      </div>
+    </div>
+    <div class="mt-12 bg-gradient-to-r from-indigo-700 to-cyan-900 rounded-xl py-7 px-5 text-center text-white text-lg shadow-lg feature-card-anim">
+      <i class="fa-solid fa-envelope-circle-check text-2xl mb-2 text-cyan-300"></i>
+      <div>Need 1-on-1 help? <span class="underline text-cyan-200">Reach out to us!</span></div>
+      <div class="mt-1 text-base text-cyan-100">You’ll get personal assistance from the developers behind SuperAgent.</div>
+    </div>
+  </div>
+</section>
+
+<footer class="mt-12 pb-8 pt-6 border-t-2 border-gradient text-center text-gray-400 text-sm bg-gray-900 bg-opacity-80">
+  <div class="mb-4"><i class="fa-solid fa-robot text-gradient text-2xl"></i> <span>AI Testverse SuperAgent</span></div>
+  <div class="mb-2">
+    &copy; 2024 Testverse Team. Made with love for makers and testers.<br>
+    <span class="text-xs text-gray-500">For best results, export this page to PDF via your browser's built-in PDF function.</span>
+  </div>
+</footer>
+<script>
+// Fully consistent FAQ: only zoom/scale, no cross, gentle arrow rotation
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  let previouslyOpen = document.querySelector('.faq-item.open');
+  if(previouslyOpen && previouslyOpen !== item){
+    const ansPrev = previouslyOpen.querySelector('.faq-answer');
+    ansPrev.style.transform = 'scale(1)';
+    ansPrev.style.opacity = '1';
+    ansPrev.animate([
+      { opacity: 1, transform: 'scale(1)' },
+      { opacity: 0, transform: 'scale(0.93)' }
+    ], {
+      duration: 260,
+      easing: 'cubic-bezier(0.55,0.05,0.67,0.15)'
+    });
+    previouslyOpen.classList.remove('open');
+  }
+  const ans = item.querySelector('.faq-answer');
+  if(item.classList.contains('open')) {
+    ans.animate([
+      { opacity: 1, transform: 'scale(1)' },
+      { opacity: 0, transform: 'scale(0.93)' }
+    ], {
+      duration: 260,
+      easing: 'cubic-bezier(0.55,0.05,0.67,0.15)'
+    });
+    setTimeout(function(){
+      item.classList.remove('open');
+    }, 220);
+  } else {
+    item.classList.add('open');
+    // Zoom-in handled by CSS
+  }
+}
+// Zoom animation for feature/focus cards, etc (all interactions consistent)
+document.addEventListener('DOMContentLoaded', function(){
+  const zoomables = document.querySelectorAll('.feature-card-anim,.step-anim,.gradient-button,.hover-zoom,nav a');
+  zoomables.forEach(function(card){
+    card.addEventListener('mousedown', ()=>card.style.transform='scale(0.98)');
+    card.addEventListener('mouseup', ()=>card.style.transform='scale(1.04)');
+    card.addEventListener('mouseleave', ()=>card.style.transform='');
+    card.addEventListener('focus', ()=>card.style.transform='scale(1.03)');
+    card.addEventListener('blur', ()=>card.style.transform='');
+  });
+});
+</script>
+</body>
+</html>
